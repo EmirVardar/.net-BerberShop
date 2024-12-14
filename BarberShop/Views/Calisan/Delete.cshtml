@@ -1,0 +1,11 @@
+﻿@model BarberShop.Models.Calisan
+
+<h1>Çalışanı Sil</h1>
+
+<p>@Model.Ad @Model.Soyad adlı çalışanı silmek istediğinizden emin misiniz?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>

@@ -1,4 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using BarberShop.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+// "DefaultConnection" adlý baðlantý dizesini appsettings.json'dan al
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// DbContext servisini kaydet
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

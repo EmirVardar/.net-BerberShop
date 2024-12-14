@@ -1,0 +1,32 @@
+﻿@model IEnumerable<BarberShop.Models.Hizmet>
+
+<h1>Hizmetler</h1>
+
+<a asp-action="Create" class="btn btn-primary">Yeni Hizmet Ekle</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Hizmet Adı</th>
+            <th>Açıklama</th>
+            <th>Ücret</th>
+            <th>Süre (dakika)</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hizmet in Model)
+        {
+            <tr>
+                <td>@hizmet.Name</td>
+                <td>@hizmet.Description</td>
+                <td>@hizmet.Price.ToString("C")</td>
+                <td>@hizmet.Duration</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@hizmet.Id" class="btn btn-warning">Düzenle</a>
+                    <a asp-action="Delete" asp-route-id="@hizmet.Id" class="btn btn-danger">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
