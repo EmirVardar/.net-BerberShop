@@ -25,6 +25,16 @@ namespace BarberShop.Controllers
 
             return View(calisanlar);
         }
+        public IActionResult IndexCalisanlar()
+        {
+            var calisanlar = _context.Calisanlar
+                .Include(c => c.CalisanHizmetleri)
+                    .ThenInclude(ch => ch.Hizmet)
+                .Include(c => c.CalismaSaatleri) // Çalışma saatlerini dahil ediyoruz
+                .ToList();
+
+            return View(calisanlar);
+        }
 
 
 

@@ -1,0 +1,49 @@
+﻿@model IEnumerable<BarberShop.Models.Calisan>
+
+<h1>Çalışanlar</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Telefon</th>
+            <th>Uzmanlık Alanları</th>
+            <th>Çalışma Saatleri</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var calisan in Model)
+        {
+            <tr>
+                <td>@calisan.Ad @calisan.Soyad</td>
+                <td>@calisan.Telefon</td>
+                <td>
+                    @foreach (var uzmanlik in calisan.CalisanHizmetleri)
+                    {
+                        <span>@uzmanlik.Hizmet.Name</span>
+
+                        <br />
+                    }
+                </td>
+                <td>
+                    @if (calisan.CalismaSaatleri.Any())
+                    {
+                        @foreach (var saat in calisan.CalismaSaatleri)
+                        {
+                            <div>
+                                <strong>@saat.Gun:</strong> @saat.BaslangicSaati - @saat.BitisSaati
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <span>Tanımlı değil</span>
+                    }
+                </td>
+                
+            </tr>
+        }
+    </tbody>
+</table>

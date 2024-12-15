@@ -19,6 +19,11 @@ namespace BarberShop.Controllers
             var hizmetler = _context.Hizmetler.ToList();
             return View(hizmetler);
         }
+        public IActionResult IndexUser()
+        {
+            var hizmetler = _context.Hizmetler.ToList();
+            return View(hizmetler);
+        }
 
         // Hizmet ekleme sayfası
         public IActionResult Create()
