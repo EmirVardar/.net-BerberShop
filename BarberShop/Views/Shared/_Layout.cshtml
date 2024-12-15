@@ -4,60 +4,68 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BarberShop</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-light border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BarberShop</a>
+                <!-- Sol Taraf: Logo -->
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+                   BarberShop
+                    
+                </a>
+
+                <!-- Toggler -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                <!-- Menü -->
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <!-- Sol Taraf: Rol bazlı menüler -->
-                    <ul class="navbar-nav me-auto">
+                    <!-- Sol Menü -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Anasayfa</a>
+                            <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Anasayfa</a>
                         </li>
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Hizmet" asp-action="Index">Hizmetler</a>
+                                <a class="nav-link text-white" asp-controller="Hizmet" asp-action="Index">Hizmetler</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Calisan" asp-action="Index">Çalışanlar</a>
+                                <a class="nav-link text-white" asp-controller="Calisan" asp-action="Index">Çalışanlar</a>
                             </li>
                         }
                         @if (User.IsInRole("User"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Hizmet" asp-action="IndexUser">Hizmetler</a>
+                                <a class="nav-link text-white" asp-controller="Hizmet" asp-action="IndexUser">Hizmetler</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Calisan" asp-action="IndexCalisanlar">Çalışanlar</a>
+                                <a class="nav-link text-white" asp-controller="Calisan" asp-action="IndexCalisanlar">Çalışanlar</a>
                             </li>
                         }
                     </ul>
 
-                    <!-- Sağ Taraf: Giriş Kontrolü -->
+                    <!-- Sağ Menü -->
                     <ul class="navbar-nav ms-auto">
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item d-flex align-items-center">
-                                <span class="navbar-text text-dark me-3">Hoşgeldiniz, @User.Identity.Name</span>
-                                <a class="btn btn-outline-danger btn-sm" asp-controller="Account" asp-action="Logout">Çıkış Yap</a>
+                                <span class="navbar-text text-white me-3">Hoşgeldiniz, <strong>@User.Identity.Name</strong></span>
+                                <a class="btn btn-outline-light btn-sm" asp-controller="Account" asp-action="Logout">Çıkış Yap</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                                <a class="btn btn-outline-light btn-sm me-2" asp-controller="Account" asp-action="Login">Giriş Yap</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
+                                <a class="btn btn-light btn-sm" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
                             </li>
                         }
                     </ul>
@@ -65,16 +73,19 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
+
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - BarberShop - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="container text-center">
+            &copy; 2024 - BarberShop - <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
