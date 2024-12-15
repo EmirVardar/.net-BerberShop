@@ -1,5 +1,6 @@
 ﻿using BarberShop.Data;
 using BarberShop.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BarberShop.Controllers
@@ -13,25 +14,31 @@ namespace BarberShop.Controllers
             _context = context;
         }
 
-        // Tüm hizmetleri listele
+        // Yalnızca Admin erişebilir
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var hizmetler = _context.Hizmetler.ToList();
             return View(hizmetler);
         }
+
+        // Yalnızca User erişebilir
+        [Authorize(Roles = "User")]
         public IActionResult IndexUser()
         {
             var hizmetler = _context.Hizmetler.ToList();
             return View(hizmetler);
         }
 
-        // Hizmet ekleme sayfası
+        // Yalnızca Admin erişebilir
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Hizmet hizmet)
         {
@@ -44,7 +51,8 @@ namespace BarberShop.Controllers
             return View(hizmet);
         }
 
-        // Hizmet düzenleme sayfası
+        // Yalnızca Admin erişebilir
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var hizmet = await _context.Hizmetler.FindAsync(id);
@@ -56,6 +64,7 @@ namespace BarberShop.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Hizmet hizmet)
         {
@@ -73,7 +82,8 @@ namespace BarberShop.Controllers
             return View(hizmet);
         }
 
-        // Hizmet silme işlemi
+        // Yalnızca Admin erişebilir
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var hizmet = await _context.Hizmetler.FindAsync(id);
@@ -85,6 +95,7 @@ namespace BarberShop.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

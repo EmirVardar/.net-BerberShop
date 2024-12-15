@@ -31,7 +31,11 @@ builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 // Rolleri ve Admin Kullanýcýsýný Yönet
-await CreateRolesAndAdminUser(app);
+if (app.Environment.IsDevelopment())
+{
+    // Rolleri ve Admin Kullanýcýsýný sadece geliþtirme ortamýnda oluþtur
+    await CreateRolesAndAdminUser(app);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -60,6 +64,7 @@ async Task CreateRolesAndAdminUser(WebApplication app)
     using var scope = app.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
     try
     {
@@ -70,6 +75,7 @@ async Task CreateRolesAndAdminUser(WebApplication app)
             if (!await roleManager.RoleExistsAsync(role))
             {
                 await roleManager.CreateAsync(new IdentityRole(role));
+                logger.LogInformation($"'{role}' rolü oluþturuldu.");
             }
         }
 
@@ -87,11 +93,17 @@ async Task CreateRolesAndAdminUser(WebApplication app)
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(adminUser, "Admin");
+                logger.LogInformation("Admin kullanýcýsý oluþturuldu ve 'Admin' rolüne atandý.");
+            }
+            else
+            {
+                logger.LogError("Admin kullanýcýsý oluþturulurken bir hata oluþtu: {0}",
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
             }
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Roller veya admin kullanýcýsý oluþturulurken bir hata oluþtu: {ex.Message}");
+        logger.LogError($"Roller veya admin kullanýcýsý oluþturulurken bir hata oluþtu: {ex.Message}");
     }
 }

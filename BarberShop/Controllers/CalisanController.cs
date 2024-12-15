@@ -1,6 +1,7 @@
 ﻿using BarberShop.Data;
 using BarberShop.Models;
 using BarberShop.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,29 +16,34 @@ namespace BarberShop.Controllers
             _context = context;
         }
 
+        // Yalnızca Admin erişebilir
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var calisanlar = _context.Calisanlar
                 .Include(c => c.CalisanHizmetleri)
                     .ThenInclude(ch => ch.Hizmet)
-                .Include(c => c.CalismaSaatleri) // Çalışma saatlerini dahil ediyoruz
+                .Include(c => c.CalismaSaatleri)
                 .ToList();
 
             return View(calisanlar);
         }
+
+        // Yalnızca User erişebilir
+        [Authorize(Roles = "User")]
         public IActionResult IndexCalisanlar()
         {
             var calisanlar = _context.Calisanlar
                 .Include(c => c.CalisanHizmetleri)
                     .ThenInclude(ch => ch.Hizmet)
-                .Include(c => c.CalismaSaatleri) // Çalışma saatlerini dahil ediyoruz
+                .Include(c => c.CalismaSaatleri)
                 .ToList();
 
             return View(calisanlar);
         }
 
-
-
+        // Admin Erişimli
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var viewModel = new CalisanViewModel
@@ -51,7 +57,7 @@ namespace BarberShop.Controllers
             return View(viewModel);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CalisanViewModel model)
@@ -64,7 +70,7 @@ namespace BarberShop.Controllers
                     Soyad = model.Soyad,
                     Telefon = model.Telefon,
                     CalismaSaatleri = model.CalismaSaatleri
-                        .Where(cs => cs.BaslangicSaati != default && cs.BitisSaati != default) // Geçerli saatleri filtrele
+                        .Where(cs => cs.BaslangicSaati != default && cs.BitisSaati != default)
                         .Select(cs => new CalisanCalismaSaatleri
                         {
                             Gun = cs.Gun,
@@ -82,9 +88,8 @@ namespace BarberShop.Controllers
             return View(model);
         }
 
-
-
-
+        // Admin Erişimli
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var calisan = await _context.Calisanlar
@@ -116,7 +121,7 @@ namespace BarberShop.Controllers
             return View(viewModel);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CalisanViewModel model)
@@ -133,18 +138,15 @@ namespace BarberShop.Controllers
                     return NotFound();
                 }
 
-                // Çalışan bilgilerini güncelle
                 calisan.Ad = model.Ad;
                 calisan.Soyad = model.Soyad;
                 calisan.Telefon = model.Telefon;
 
-                // Uzmanlık alanlarını güncelle
                 _context.CalisanHizmetleri.RemoveRange(calisan.CalisanHizmetleri);
                 calisan.CalisanHizmetleri = model.SecilenHizmetler
                     .Select(hizmetId => new CalisanHizmet { HizmetId = hizmetId })
                     .ToList();
 
-                // Çalışma saatlerini güncelle
                 _context.CalisanCalismaSaatleri.RemoveRange(calisan.CalismaSaatleri);
                 calisan.CalismaSaatleri = model.CalismaSaatleri
                     .Where(cs => cs.BaslangicSaati != default && cs.BitisSaati != default)
@@ -165,8 +167,7 @@ namespace BarberShop.Controllers
             return View(model);
         }
 
-
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var calisan = await _context.Calisanlar
@@ -186,6 +187,5 @@ namespace BarberShop.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
     }
-    }
+}
