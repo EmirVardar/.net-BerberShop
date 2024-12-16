@@ -39,8 +39,12 @@
                             <td class="align-middle">@hizmet.Price.ToString("C")</td>
                             <td class="align-middle">@hizmet.Duration</td>
                             <td class="text-center align-middle">
-                                <a asp-action="Edit" asp-route-id="@hizmet.Id" class="btn btn-sm btn-outline-primary me-1">Düzenle</a>
-                                <a asp-action="Delete" asp-route-id="@hizmet.Id" class="btn btn-sm btn-outline-danger">Sil</a>
+                                <a asp-action="Edit" asp-route-id="@hizmet.Id" class="btn btn-sm btn-warning text-white me-1">
+                                    <i class="bi bi-pencil"></i> Düzenle
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@hizmet.Id" class="btn btn-sm btn-danger text-white">
+                                    <i class="bi bi-trash"></i> Sil
+                                </a>
                             </td>
                         </tr>
                     }
