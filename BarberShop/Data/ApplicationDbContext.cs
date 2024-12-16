@@ -15,6 +15,7 @@
         public DbSet<CalisanHizmet> CalisanHizmetleri { get; set; }
         public DbSet<CalisanCalismaSaatleri> CalisanCalismaSaatleri { get; set; }
 
+        public DbSet<Randevu> Randevular { get; set; }
 
 
         // Veritabanı tablolarınızı temsil eden DbSet'ler:

@@ -35,6 +35,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-controller="Calisan" asp-action="Index">Çalışanlar</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Randevu" asp-action="RandevuListele">Randevular</a>
+                            </li>
                         }
                         @if (User.IsInRole("User"))
                         {
@@ -42,7 +45,10 @@
                                 <a class="nav-link text-white" asp-controller="Hizmet" asp-action="IndexUser">Hizmetler</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-controller="Calisan" asp-action="IndexCalisanlar">Çalışanlar</a>
+                                <a class="nav-link text-white" asp-controller="Calisan" asp-action="IndexUser">Çalışanlar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Randevu" asp-action="RandevuAl">Randevu Al</a>
                             </li>
                         }
                     </ul>

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<BarberShop.Models.Randevu>
+@{
+    ViewData["Title"] = "Randevu Listesi";
+}
+
+<h2>Randevu Listesi</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Kullanıcı</th>
+            <th>Çalışan</th>
+            <th>Tarih ve Saat</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var randevu in Model)
+        {
+            <tr>
+                <td>@randevu.Kullanici.Email</td>
+                <td>@randevu.Calisan.Ad @randevu.Calisan.Soyad</td>
+                <td>@randevu.RandevuTarihi</td>
+                <td>
+                    @(randevu.OnaylandiMi ? "Onaylandı" : "Bekliyor")
+                </td>
+                <td>
+                    @if (!randevu.OnaylandiMi)
+                    {
+                        <a asp-action="Onayla" asp-route-id="@randevu.Id" class="btn btn-sm btn-success">Onayla</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

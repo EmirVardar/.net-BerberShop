@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BarberShop.Controllers
 {
-    [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
+    
     public class CalisanController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,7 +18,20 @@ namespace BarberShop.Controllers
         }
 
         // Tüm çalışanları listele
+        // Admin rolü yetkisi gerekiyor
         public IActionResult Index()
+        {
+            var calisanlar = _context.Calisanlar
+                .Include(c => c.CalisanHizmetleri) // Uzmanlık alanlarını dahil et
+                    .ThenInclude(ch => ch.Hizmet) // Hizmet detaylarını dahil et
+                .Include(c => c.CalismaSaatleri) // Çalışma saatlerini dahil et
+                .ToList();
+
+            return View(calisanlar);
+        }
+
+        [Authorize(Roles = "User")]
+        public IActionResult IndexUser()
         {
             var calisanlar = _context.Calisanlar
                 .Include(c => c.CalisanHizmetleri) // Uzmanlık alanlarını dahil et
@@ -31,12 +44,13 @@ namespace BarberShop.Controllers
 
 
         // Yeni çalışan ekleme sayfası
+        [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
         public IActionResult Create()
         {
             ViewBag.Hizmetler = _context.Hizmetler.ToList(); // Hizmetleri dropdown için al
             return View(new CalisanViewModel());
         }
-
+        [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CalisanViewModel model)
@@ -81,6 +95,7 @@ namespace BarberShop.Controllers
 
 
         // Çalışan düzenleme
+        [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
         public async Task<IActionResult> Edit(int id)
         {
             var calisan = await _context.Calisanlar
@@ -109,6 +124,7 @@ namespace BarberShop.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CalisanViewModel model)
@@ -151,6 +167,7 @@ namespace BarberShop.Controllers
         }
 
         // Çalışan silme
+        [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
         public async Task<IActionResult> Delete(int id)
         {
             var calisan = await _context.Calisanlar

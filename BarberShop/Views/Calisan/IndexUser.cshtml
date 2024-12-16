@@ -3,11 +3,13 @@
 <div class="container mt-5">
     <!-- Sayfa Başlığı -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold text-primary">Çalışanlarımız</h1>
-        <p class="text-muted">BarberShop çalışanlarımızın iletişim bilgileri, uzmanlık alanları ve çalışma saatleri burada listelenmiştir.</p>
+        <h1 class="fw-bold text-primary">Çalışan Listesi</h1>
+        <p class="text-muted">BarberShop bünyesinde hizmet veren çalışanları aşağıda görebilirsiniz.</p>
     </div>
 
-    <!-- Çalışanlar Tablosu -->
+    
+
+    <!-- Çalışan Listesi Tablosu -->
     <div class="card shadow-lg border-0">
         <div class="card-header bg-primary text-white text-center">
             <h4 class="mb-0">Çalışan Listesi</h4>
@@ -20,46 +22,44 @@
                         <th>Telefon</th>
                         <th>Uzmanlık Alanları</th>
                         <th>Çalışma Saatleri</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var calisan in Model)
                     {
                         <tr>
+                            <!-- Ad Soyad -->
                             <td class="align-middle">@calisan.Ad @calisan.Soyad</td>
+
+                            <!-- Telefon -->
                             <td class="align-middle">@calisan.Telefon</td>
+
+                            <!-- Uzmanlık Alanları -->
                             <td class="align-middle">
-                                @if (calisan.CalisanHizmetleri.Any())
+                                @foreach (var uzmanlik in calisan.CalisanHizmetleri)
                                 {
-                                    <ul class="list-unstyled mb-0">
-                                        @foreach (var uzmanlik in calisan.CalisanHizmetleri)
-                                        {
-                                            <li><span class="badge bg-info text-white">@uzmanlik.Hizmet.Name</span></li>
-                                        }
-                                    </ul>
+                                    <div>@uzmanlik.Hizmet.Name</div>
+                                }
+                            </td>
+
+                            <!-- Çalışma Saatleri -->
+                            <td class="align-middle">
+                                @if (calisan.CalismaSaatleri != null && calisan.CalismaSaatleri.Any())
+                                {
+                                    @foreach (var saat in calisan.CalismaSaatleri)
+                                    {
+                                        <div>@saat.Gun: @saat.BaslangicSaati - @saat.BitisSaati</div>
+                                    }
                                 }
                                 else
                                 {
-                                    <span>Tanımlı değil</span>
+                                    <span class="text-muted">Tanımlı değil</span>
                                 }
                             </td>
-                            <td class="align-middle">
-                                @if (calisan.CalismaSaatleri.Any())
-                                {
-                                    <ul class="list-unstyled mb-0">
-                                        @foreach (var saat in calisan.CalismaSaatleri)
-                                        {
-                                            <li>
-                                                <strong>@saat.Gun:</strong> @saat.BaslangicSaati - @saat.BitisSaati
-                                            </li>
-                                        }
-                                    </ul>
-                                }
-                                else
-                                {
-                                    <span>Tanımlı değil</span>
-                                }
-                            </td>
+
+                            
+                            
                         </tr>
                     }
                 </tbody>
