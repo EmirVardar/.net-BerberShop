@@ -1,12 +1,13 @@
 ﻿using BarberShop.Data;
 using BarberShop.Models;
-using BarberShop.ViewModels;
+using BarberShop.ViewModels; // ViewModel'ler için
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BarberShop.Controllers
 {
+    [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
     public class CalisanController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,52 +17,38 @@ namespace BarberShop.Controllers
             _context = context;
         }
 
-        // Yalnızca Admin erişebilir
-        [Authorize(Roles = "Admin")]
+        // Tüm çalışanları listele
         public IActionResult Index()
         {
             var calisanlar = _context.Calisanlar
-                .Include(c => c.CalisanHizmetleri)
-                    .ThenInclude(ch => ch.Hizmet)
-                .Include(c => c.CalismaSaatleri)
+                .Include(c => c.CalisanHizmetleri) // Uzmanlık alanlarını dahil et
+                    .ThenInclude(ch => ch.Hizmet) // Hizmet detaylarını dahil et
+                .Include(c => c.CalismaSaatleri) // Çalışma saatlerini dahil et
                 .ToList();
 
             return View(calisanlar);
         }
 
-        // Yalnızca User erişebilir
-        [Authorize(Roles = "User")]
-        public IActionResult IndexCalisanlar()
-        {
-            var calisanlar = _context.Calisanlar
-                .Include(c => c.CalisanHizmetleri)
-                    .ThenInclude(ch => ch.Hizmet)
-                .Include(c => c.CalismaSaatleri)
-                .ToList();
 
-            return View(calisanlar);
-        }
-
-        // Admin Erişimli
-        [Authorize(Roles = "Admin")]
+        // Yeni çalışan ekleme sayfası
         public IActionResult Create()
         {
-            var viewModel = new CalisanViewModel
-            {
-                TumHizmetler = _context.Hizmetler.ToList(),
-                CalismaSaatleri = Enum.GetValues(typeof(DayOfWeek))
-                    .Cast<DayOfWeek>()
-                    .Select(gun => new CalisanCalismaSaatiViewModel { Gun = gun })
-                    .ToList()
-            };
-            return View(viewModel);
+            ViewBag.Hizmetler = _context.Hizmetler.ToList(); // Hizmetleri dropdown için al
+            return View(new CalisanViewModel());
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CalisanViewModel model)
         {
+            // Sadece seçilen günleri filtrele
+            var seciliGunler = model.CalismaSaatleri
+                .Where(cs => cs.Secildi && cs.BaslangicSaati != default && cs.BitisSaati != default) // Saatler dolu mu?
+                .ToList();
+
+            // ModelState'i temizle (gereksiz validasyon hatalarını önlemek için)
+            ModelState.Clear();
+
             if (ModelState.IsValid)
             {
                 var calisan = new Calisan
@@ -69,27 +56,31 @@ namespace BarberShop.Controllers
                     Ad = model.Ad,
                     Soyad = model.Soyad,
                     Telefon = model.Telefon,
-                    CalismaSaatleri = model.CalismaSaatleri
-                        .Where(cs => cs.BaslangicSaati != default && cs.BitisSaati != default)
-                        .Select(cs => new CalisanCalismaSaatleri
-                        {
-                            Gun = cs.Gun,
-                            BaslangicSaati = cs.BaslangicSaati,
-                            BitisSaati = cs.BitisSaati
-                        }).ToList()
+                    CalisanHizmetleri = model.SecilenHizmetler.Select(hizmetId => new CalisanHizmet
+                    {
+                        HizmetId = hizmetId
+                    }).ToList(),
+                    CalismaSaatleri = seciliGunler.Select(cs => new CalisanCalismaSaatleri
+                    {
+                        Gun = cs.Gun,
+                        BaslangicSaati = cs.BaslangicSaati,
+                        BitisSaati = cs.BitisSaati
+                    }).ToList()
                 };
 
+                // Veritabanına kaydet
                 _context.Calisanlar.Add(calisan);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            model.TumHizmetler = _context.Hizmetler.ToList();
+            ViewBag.Hizmetler = _context.Hizmetler.ToList();
             return View(model);
         }
 
-        // Admin Erişimli
-        [Authorize(Roles = "Admin")]
+
+
+        // Çalışan düzenleme
         public async Task<IActionResult> Edit(int id)
         {
             var calisan = await _context.Calisanlar
@@ -97,10 +88,7 @@ namespace BarberShop.Controllers
                 .Include(c => c.CalismaSaatleri)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (calisan == null)
-            {
-                return NotFound();
-            }
+            if (calisan == null) return NotFound();
 
             var viewModel = new CalisanViewModel
             {
@@ -109,7 +97,6 @@ namespace BarberShop.Controllers
                 Soyad = calisan.Soyad,
                 Telefon = calisan.Telefon,
                 SecilenHizmetler = calisan.CalisanHizmetleri.Select(ch => ch.HizmetId).ToList(),
-                TumHizmetler = _context.Hizmetler.ToList(),
                 CalismaSaatleri = calisan.CalismaSaatleri.Select(cs => new CalisanCalismaSaatiViewModel
                 {
                     Gun = cs.Gun,
@@ -118,10 +105,10 @@ namespace BarberShop.Controllers
                 }).ToList()
             };
 
+            ViewBag.Hizmetler = _context.Hizmetler.ToList();
             return View(viewModel);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CalisanViewModel model)
@@ -133,41 +120,37 @@ namespace BarberShop.Controllers
                     .Include(c => c.CalismaSaatleri)
                     .FirstOrDefaultAsync(c => c.Id == model.Id);
 
-                if (calisan == null)
-                {
-                    return NotFound();
-                }
+                if (calisan == null) return NotFound();
 
                 calisan.Ad = model.Ad;
                 calisan.Soyad = model.Soyad;
                 calisan.Telefon = model.Telefon;
 
+                // Uzmanlık alanlarını güncelle
                 _context.CalisanHizmetleri.RemoveRange(calisan.CalisanHizmetleri);
-                calisan.CalisanHizmetleri = model.SecilenHizmetler
-                    .Select(hizmetId => new CalisanHizmet { HizmetId = hizmetId })
-                    .ToList();
+                calisan.CalisanHizmetleri = model.SecilenHizmetler.Select(hizmetId => new CalisanHizmet
+                {
+                    HizmetId = hizmetId
+                }).ToList();
 
+                // Çalışma saatlerini güncelle
                 _context.CalisanCalismaSaatleri.RemoveRange(calisan.CalismaSaatleri);
-                calisan.CalismaSaatleri = model.CalismaSaatleri
-                    .Where(cs => cs.BaslangicSaati != default && cs.BitisSaati != default)
-                    .Select(cs => new CalisanCalismaSaatleri
-                    {
-                        Gun = cs.Gun,
-                        BaslangicSaati = cs.BaslangicSaati,
-                        BitisSaati = cs.BitisSaati
-                    })
-                    .ToList();
+                calisan.CalismaSaatleri = model.CalismaSaatleri.Select(cs => new CalisanCalismaSaatleri
+                {
+                    Gun = cs.Gun,
+                    BaslangicSaati = cs.BaslangicSaati,
+                    BitisSaati = cs.BitisSaati
+                }).ToList();
 
-                _context.Calisanlar.Update(calisan);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            model.TumHizmetler = _context.Hizmetler.ToList();
+            ViewBag.Hizmetler = _context.Hizmetler.ToList();
             return View(model);
         }
 
-        [Authorize(Roles = "Admin")]
+        // Çalışan silme
         public async Task<IActionResult> Delete(int id)
         {
             var calisan = await _context.Calisanlar
@@ -175,10 +158,7 @@ namespace BarberShop.Controllers
                 .Include(c => c.CalismaSaatleri)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (calisan == null)
-            {
-                return NotFound();
-            }
+            if (calisan == null) return NotFound();
 
             _context.CalisanHizmetleri.RemoveRange(calisan.CalisanHizmetleri);
             _context.CalisanCalismaSaatleri.RemoveRange(calisan.CalismaSaatleri);

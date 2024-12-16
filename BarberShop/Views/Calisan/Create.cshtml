@@ -1,54 +1,75 @@
 ﻿@model BarberShop.ViewModels.CalisanViewModel
 
-<h1>Yeni Çalışan Ekle</h1>
+@{
+    ViewData["Title"] = "Yeni Çalışan Ekle";
+}
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label>Ad</label>
-        <input asp-for="Ad" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Soyad</label>
-        <input asp-for="Soyad" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Telefon</label>
-        <input asp-for="Telefon" class="form-control" />
-    </div>
+<h1 class="mb-4 text-center text-primary">Yeni Çalışan Ekle</h1>
 
-    <h3>Uzmanlık Alanları</h3>
-    @foreach (var hizmet in Model.TumHizmetler)
-    {
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="@hizmet.Id" name="SecilenHizmetler" />
-            <label class="form-check-label">@hizmet.Name</label>
+<form asp-action="Create" method="post" class="container p-4 border rounded shadow-sm bg-white">
+    <!-- Ad, Soyad, Telefon Alanları -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Ad</label>
+            <input asp-for="Ad" class="form-control" placeholder="Adınızı girin" required />
         </div>
-    }
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Soyad</label>
+            <input asp-for="Soyad" class="form-control" placeholder="Soyadınızı girin" required />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Telefon</label>
+            <input asp-for="Telefon" class="form-control" placeholder="Telefon numaranız" required />
+        </div>
+    </div>
 
-    <h3>Çalışma Saatleri</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Gün</th>
-                <th>Başlangıç Saati</th>
-                <th>Bitiş Saati</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (var i = 0; i < Model.CalismaSaatleri.Count; i++)
+    <!-- Uzmanlık Alanları -->
+    <div class="mb-4">
+        <h4 class="text-secondary mb-3">Uzmanlık Alanları</h4>
+        <div class="row">
+            @foreach (var hizmet in ViewBag.Hizmetler)
             {
-                <tr>
-                    <td>@Model.CalismaSaatleri[i].Gun</td>
-                    <td>
-                        <input type="time" asp-for="CalismaSaatleri[@i].BaslangicSaati" class="form-control" />
-                    </td>
-                    <td>
-                        <input type="time" asp-for="CalismaSaatleri[@i].BitisSaati" class="form-control" />
-                    </td>
-                </tr>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="@hizmet.Id" name="SecilenHizmetler" id="hizmet_@hizmet.Id">
+                        <label class="form-check-label fw-normal" for="hizmet_@hizmet.Id">@hizmet.Name</label>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    </div>
 
-    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <!-- Çalışma Saatleri -->
+    <div class="mb-4">
+        <h4 class="text-secondary mb-3">Çalışma Saatleri</h4>
+        <div class="row">
+            @for (var i = 0; i < 7; i++) // Haftanın 7 günü
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="border rounded p-3 bg-light">
+                        <div class="form-check mb-2">
+                            <input type="checkbox" id="gun-@i" name="CalismaSaatleri[@i].Secildi" value="true" class="form-check-input">
+                            <label for="gun-@i" class="form-check-label fw-bold">@((DayOfWeek)i)</label>
+                        </div>
+                        <div class="row gx-2">
+                            <div class="col">
+                                <label class="form-label">Başlangıç</label>
+                                <input type="time" name="CalismaSaatleri[@i].BaslangicSaati" class="form-control" />
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Bitiş</label>
+                                <input type="time" name="CalismaSaatleri[@i].BitisSaati" class="form-control" />
+                            </div>
+                        </div>
+                        <input type="hidden" name="CalismaSaatleri[@i].Gun" value="@((DayOfWeek)i)" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Kaydet Butonu -->
+    <div class="text-end">
+        <button type="submit" class="btn btn-success px-4">Kaydet</button>
+    </div>
 </form>
