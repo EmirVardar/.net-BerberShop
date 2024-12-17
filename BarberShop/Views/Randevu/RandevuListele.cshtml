@@ -1,8 +1,4 @@
-﻿@model List<BarberShop.Models.Randevu>
-
-@{
-    ViewData["Title"] = "Randevular";
-}
+﻿@model List<BarberShop.ViewModels.RandevuListeViewModel>
 
 <h2>Randevular</h2>
 
@@ -21,10 +17,10 @@
         @foreach (var r in Model)
         {
             <tr>
-                <td>@r.UserId</td>
-                <td>@r.Calisan.Ad @r.Calisan.Soyad</td>
-                <td>@r.Hizmet.Name</td>
-                <td>@r.RandevuTarihi</td>
+                <td>@r.UserName</td>
+                <td>@r.CalisanAdi</td>
+                <td>@r.HizmetAdi</td>
+                <td>@r.Tarih</td>
                 <td>@r.Durum</td>
                 <td>
                     @if (r.Durum == BarberShop.Models.RandevuDurumu.Pending)

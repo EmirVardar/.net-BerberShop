@@ -109,8 +109,31 @@ namespace BarberShop.Controllers
                 .Include(r => r.Calisan)
                 .Include(r => r.Hizmet)
                 .ToListAsync();
-            return View(randevular);
+
+            // Her randevu için ilgili user'ı çek
+            // Burada performans açısından birden çok sorgu çalışır.
+            // Gerekirse cache veya bir dictionary kullanabilirsiniz.
+            var viewModelList = new List<RandevuListeViewModel>();
+
+            foreach (var r in randevular)
+            {
+                var user = await _userManager.FindByIdAsync(r.UserId);
+                var userName = user?.UserName ?? r.UserId; // Kullanıcı bulunamazsa en azından UserId göster
+
+                viewModelList.Add(new RandevuListeViewModel
+                {
+                    Id = r.Id,
+                    UserName = userName,
+                    CalisanAdi = r.Calisan.Ad + " " + r.Calisan.Soyad,
+                    HizmetAdi = r.Hizmet.Name,
+                    Tarih = r.RandevuTarihi,
+                    Durum = r.Durum
+                });
+            }
+
+            return View(viewModelList);
         }
+
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
