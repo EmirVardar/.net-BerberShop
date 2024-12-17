@@ -4,6 +4,7 @@ using BarberShop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BarberShop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241217115831_randevu2")]
+    partial class randevu2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,24 +138,24 @@ namespace BarberShop.Migrations
                     b.Property<int>("CalisanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Durum")
-                        .HasColumnType("int");
+                    b.Property<string>("KullaniciId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("HizmetId")
-                        .HasColumnType("int");
+                    b.Property<bool>("OnaylandiMi")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan>("RandevuSaati")
+                        .HasColumnType("time");
 
                     b.Property<DateTime>("RandevuTarihi")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CalisanId");
 
-                    b.HasIndex("HizmetId");
+                    b.HasIndex("KullaniciId");
 
                     b.ToTable("Randevular");
                 });
@@ -397,15 +400,15 @@ namespace BarberShop.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BarberShop.Models.Hizmet", "Hizmet")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Kullanici")
                         .WithMany()
-                        .HasForeignKey("HizmetId")
+                        .HasForeignKey("KullaniciId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Calisan");
 
-                    b.Navigation("Hizmet");
+                    b.Navigation("Kullanici");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

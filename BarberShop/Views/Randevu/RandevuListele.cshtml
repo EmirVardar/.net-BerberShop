@@ -1,34 +1,46 @@
-﻿@model IEnumerable<BarberShop.Models.Randevu>
+﻿@model List<BarberShop.Models.Randevu>
+
 @{
-    ViewData["Title"] = "Randevu Listesi";
+    ViewData["Title"] = "Randevular";
 }
 
-<h2>Randevu Listesi</h2>
+<h2>Randevular</h2>
 
 <table class="table table-bordered">
     <thead>
         <tr>
             <th>Kullanıcı</th>
             <th>Çalışan</th>
-            <th>Tarih ve Saat</th>
+            <th>Hizmet</th>
+            <th>Tarih</th>
             <th>Durum</th>
-            <th>İşlemler</th>
+            <th>İşlem</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var randevu in Model)
+        @foreach (var r in Model)
         {
             <tr>
-                <td>@randevu.Kullanici.Email</td>
-                <td>@randevu.Calisan.Ad @randevu.Calisan.Soyad</td>
-                <td>@randevu.RandevuTarihi</td>
+                <td>@r.UserId</td>
+                <td>@r.Calisan.Ad @r.Calisan.Soyad</td>
+                <td>@r.Hizmet.Name</td>
+                <td>@r.RandevuTarihi</td>
+                <td>@r.Durum</td>
                 <td>
-                    @(randevu.OnaylandiMi ? "Onaylandı" : "Bekliyor")
-                </td>
-                <td>
-                    @if (!randevu.OnaylandiMi)
+                    @if (r.Durum == BarberShop.Models.RandevuDurumu.Pending)
                     {
-                        <a asp-action="Onayla" asp-route-id="@randevu.Id" class="btn btn-sm btn-success">Onayla</a>
+                        <form asp-action="Onayla" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@r.Id" />
+                            <button type="submit" class="btn btn-success btn-sm">Onayla</button>
+                        </form>
+                        <form asp-action="Reddet" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@r.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Reddet</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span>Onay/Reddetme yapılmış</span>
                     }
                 </td>
             </tr>

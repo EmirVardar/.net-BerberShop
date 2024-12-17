@@ -1,20 +1,39 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-
-
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BarberShop.Models
 {
+    public enum RandevuDurumu
+    {
+        Pending,
+        Approved,
+        Rejected
+    }
+
     public class Randevu
     {
         public int Id { get; set; }
-        public string KullaniciId { get; set; } // Kullanıcı ID'si
-        public IdentityUser Kullanici { get; set; } // Navigation Property
 
-        public int CalisanId { get; set; } // Çalışan ID'si
-        public Calisan Calisan { get; set; } // Navigation Property
+        [Required]
+        public string UserId { get; set; }
 
-        public DateTime RandevuTarihi { get; set; } // Randevu tarihi ve saati
-        public bool OnaylandiMi { get; set; } = false; // Randevu durumu (Admin onayı)
+        [Required]
+        public int CalisanId { get; set; }
+
+        [ForeignKey("CalisanId")]
+        public Calisan Calisan { get; set; }
+
+        [Required]
+        public int HizmetId { get; set; }
+
+        [ForeignKey("HizmetId")]
+        public Hizmet Hizmet { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime RandevuTarihi { get; set; }
+
+        public RandevuDurumu Durum { get; set; } = RandevuDurumu.Pending;
     }
 }

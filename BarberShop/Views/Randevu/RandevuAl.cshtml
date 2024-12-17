@@ -1,25 +1,47 @@
-﻿@model dynamic
+﻿@model BarberShop.ViewModels.RandevuViewModel
 @{
     ViewData["Title"] = "Randevu Al";
 }
 
 <h2>Randevu Al</h2>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
 <form asp-action="RandevuAl" method="post">
-    <div class="form-group">
-        <label>Çalışan Seçin</label>
-        <select name="calisanId" class="form-control">
-            @foreach (var calisan in ViewBag.Calisanlar)
+    <div class="mb-3">
+        <label asp-for="CalisanId" class="form-label"></label>
+        <select asp-for="CalisanId" class="form-select">
+            <option value="">Seçiniz</option>
+            @foreach (var c in ViewBag.Calisanlar)
             {
-                <option value="@calisan.Id">@calisan.Ad @calisan.Soyad</option>
+                <option value="@c.Id">@c.Ad @c.Soyad</option>
             }
         </select>
+        <span asp-validation-for="CalisanId" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label>Tarih ve Saat</label>
-        <input type="datetime-local" name="randevuTarihi" class="form-control" required />
+    <div class="mb-3">
+        <label asp-for="HizmetId" class="form-label"></label>
+        <select asp-for="HizmetId" class="form-select">
+            <option value="">Seçiniz</option>
+            @foreach (var h in ViewBag.Hizmetler)
+            {
+                <option value="@h.Id">@h.Name</option>
+            }
+        </select>
+        <span asp-validation-for="HizmetId" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-success mt-3">Randevu Al</button>
+    <div class="mb-3">
+        <label asp-for="RandevuTarihi" class="form-label"></label>
+        <input asp-for="RandevuTarihi" type="datetime-local" class="form-control" />
+        <span asp-validation-for="RandevuTarihi" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Randevu Talep Et</button>
 </form>
