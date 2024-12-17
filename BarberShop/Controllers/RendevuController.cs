@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace BarberShop.Controllers
 {
@@ -44,6 +45,8 @@ namespace BarberShop.Controllers
             }
 
             var calisan = await _context.Calisanlar
+                .Include(c => c.CalisanHizmetleri)
+                    .ThenInclude(ch => ch.Hizmet)
                 .Include(c => c.CalismaSaatleri)
                 .FirstOrDefaultAsync(c => c.Id == model.CalisanId);
 
@@ -59,6 +62,16 @@ namespace BarberShop.Controllers
             if (hizmet == null)
             {
                 ModelState.AddModelError("", "Geçersiz hizmet seçimi.");
+                ViewBag.Calisanlar = _context.Calisanlar.ToList();
+                ViewBag.Hizmetler = _context.Hizmetler.ToList();
+                return View(model);
+            }
+
+            // Uzmanlık alanı kontrolü
+            bool calisanUzmanlasmismi = calisan.CalisanHizmetleri.Any(ch => ch.HizmetId == model.HizmetId);
+            if (!calisanUzmanlasmismi)
+            {
+                ModelState.AddModelError("", "Bu çalışan seçtiğiniz hizmeti vermemektedir.");
                 ViewBag.Calisanlar = _context.Calisanlar.ToList();
                 ViewBag.Hizmetler = _context.Hizmetler.ToList();
                 return View(model);
@@ -110,15 +123,12 @@ namespace BarberShop.Controllers
                 .Include(r => r.Hizmet)
                 .ToListAsync();
 
-            // Her randevu için ilgili user'ı çek
-            // Burada performans açısından birden çok sorgu çalışır.
-            // Gerekirse cache veya bir dictionary kullanabilirsiniz.
             var viewModelList = new List<RandevuListeViewModel>();
 
             foreach (var r in randevular)
             {
                 var user = await _userManager.FindByIdAsync(r.UserId);
-                var userName = user?.UserName ?? r.UserId; // Kullanıcı bulunamazsa en azından UserId göster
+                var userName = user?.UserName ?? r.UserId;
 
                 viewModelList.Add(new RandevuListeViewModel
                 {
@@ -133,7 +143,6 @@ namespace BarberShop.Controllers
 
             return View(viewModelList);
         }
-
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
@@ -161,6 +170,35 @@ namespace BarberShop.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(RandevuListele));
+        }
+
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> Randevularim()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user.Id;
+
+            var randevular = await _context.Randevular
+                .Include(r => r.Calisan)
+                .Include(r => r.Hizmet)
+                .Where(r => r.UserId == userId)
+                .ToListAsync();
+
+            var viewModelList = new List<RandevuListeViewModel>();
+            foreach (var r in randevular)
+            {
+                viewModelList.Add(new RandevuListeViewModel
+                {
+                    Id = r.Id,
+                    UserName = user.UserName,
+                    CalisanAdi = r.Calisan.Ad + " " + r.Calisan.Soyad,
+                    HizmetAdi = r.Hizmet.Name,
+                    Tarih = r.RandevuTarihi,
+                    Durum = r.Durum
+                });
+            }
+
+            return View(viewModelList);
         }
     }
 }

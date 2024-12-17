@@ -1,0 +1,32 @@
+﻿@model List<BarberShop.ViewModels.RandevuListeViewModel>
+
+<h2>Randevularım</h2>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>Henüz bir randevu talebiniz bulunmuyor.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Çalışan</th>
+                <th>Hizmet</th>
+                <th>Tarih</th>
+                <th>Durum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.CalisanAdi</td>
+                    <td>@r.HizmetAdi</td>
+                    <td>@r.Tarih.ToString("dd/MM/yyyy HH:mm")</td> <!-- Tarih formatı düzenlendi -->
+                    <td>@r.Durum.ToString()</td> <!-- Enum değerini direkt string olarak yazdır -->
+                </tr>
+            }
+        </tbody>
+    </table>
+}
