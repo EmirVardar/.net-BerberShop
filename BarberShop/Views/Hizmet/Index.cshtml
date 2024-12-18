@@ -3,21 +3,21 @@
 <div class="container mt-5">
     <!-- Sayfa Başlığı -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold text-primary">Hizmetlerimiz</h1>
+        <h1 class="fw-bold text-primary">Hizmet Listesi</h1>
         <p class="text-muted">BarberShop'un sunduğu tüm hizmetleri aşağıda görebilirsiniz.</p>
     </div>
 
-    <!-- Hizmet Ekle Butonu -->
+    <!-- Yeni Hizmet Ekle Butonu -->
     <div class="d-flex justify-content-end mb-3">
         <a asp-action="Create" class="btn btn-success btn-sm px-3">
-            <i class="bi bi-plus-circle me-1"></i> Hizmet Ekle
+            <i class="bi bi-plus-circle me-1"></i> Yeni Hizmet Ekle
         </a>
     </div>
 
-    <!-- Hizmetler Tablosu -->
+    <!-- Hizmet Listesi Tablosu -->
     <div class="card shadow-lg border-0">
         <div class="card-header bg-primary text-white text-center">
-            <h4 class="mb-0">Hizmet Listesi</h4>
+            <h4 class="mb-0">Hizmetler</h4>
         </div>
         <div class="card-body p-0">
             <table class="table table-striped table-hover mb-0">
@@ -34,15 +34,24 @@
                     @foreach (var hizmet in Model)
                     {
                         <tr>
+                            <!-- Hizmet Adı -->
                             <td class="align-middle">@hizmet.Name</td>
+
+                            <!-- Açıklama -->
                             <td class="align-middle">@hizmet.Description</td>
+
+                            <!-- Ücret -->
                             <td class="align-middle">@hizmet.Price.ToString("C")</td>
+
+                            <!-- Süre -->
                             <td class="align-middle">@hizmet.Duration</td>
+
+                            <!-- İşlemler -->
                             <td class="text-center align-middle">
                                 <a asp-action="Edit" asp-route-id="@hizmet.Id" class="btn btn-sm btn-warning text-white me-1">
                                     <i class="bi bi-pencil"></i> Düzenle
                                 </a>
-                                <a asp-action="Delete" asp-route-id="@hizmet.Id" class="btn btn-sm btn-danger text-white">
+                                <a asp-action="Delete" asp-route-id="@hizmet.Id" class="btn btn-sm btn-danger">
                                     <i class="bi bi-trash"></i> Sil
                                 </a>
                             </td>

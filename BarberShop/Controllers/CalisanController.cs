@@ -166,9 +166,22 @@ namespace BarberShop.Controllers
             return View(model);
         }
 
-        // Çalışan silme
         [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
+        {
+            var calisan = await _context.Calisanlar
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (calisan == null) return NotFound();
+
+            return View(calisan);
+        }
+
+        [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var calisan = await _context.Calisanlar
                 .Include(c => c.CalisanHizmetleri)
@@ -177,12 +190,16 @@ namespace BarberShop.Controllers
 
             if (calisan == null) return NotFound();
 
+            // İlişkili verileri sil
             _context.CalisanHizmetleri.RemoveRange(calisan.CalisanHizmetleri);
             _context.CalisanCalismaSaatleri.RemoveRange(calisan.CalismaSaatleri);
-            _context.Calisanlar.Remove(calisan);
 
+            // Çalışanı sil
+            _context.Calisanlar.Remove(calisan);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

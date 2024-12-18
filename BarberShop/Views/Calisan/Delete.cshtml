@@ -4,19 +4,20 @@
     ViewData["Title"] = "Çalışan Sil";
 }
 
-<h1 class="mb-4 text-danger">Çalışan Sil</h1>
+<div class="container mt-5">
+    <h1 class="mb-4 text-danger">Çalışan Sil</h1>
+    <p>Bu çalışanı silmek istediğinizden emin misiniz?</p>
 
-<p>Bu çalışanı silmek istediğinizden emin misiniz?</p>
+    <dl class="row">
+        <dt class="col-sm-3">Ad Soyad</dt>
+        <dd class="col-sm-9">@Model.Ad @Model.Soyad</dd>
+        <dt class="col-sm-3">Telefon</dt>
+        <dd class="col-sm-9">@Model.Telefon</dd>
+    </dl>
 
-<dl class="row">
-    <dt class="col-sm-3">Ad Soyad</dt>
-    <dd class="col-sm-9">@Model.Ad @Model.Soyad</dd>
-    <dt class="col-sm-3">Telefon</dt>
-    <dd class="col-sm-9">@Model.Telefon</dd>
-</dl>
-
-<form asp-action="Delete">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Sil</button>
-    <a asp-action="Index" class="btn btn-secondary">İptal</a>
-</form>
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Sil</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>

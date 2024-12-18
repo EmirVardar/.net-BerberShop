@@ -1,11 +1,16 @@
 ﻿@model BarberShop.Models.Hizmet
 
+@{
+    ViewData["Title"] = "Hizmeti Sil";
+}
+
 <h1>Hizmeti Sil</h1>
 
 <p>@Model.Name adlı hizmeti silmek istediğinize emin misiniz?</p>
 
 <form asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" asp-for="Id" />
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
     <button type="submit" class="btn btn-danger">Evet, Sil</button>
     <a asp-action="Index" class="btn btn-secondary">Hayır</a>
 </form>
