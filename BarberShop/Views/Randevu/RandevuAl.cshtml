@@ -3,45 +3,70 @@
     ViewData["Title"] = "Randevu Al";
 }
 
-<h2>Randevu Al</h2>
-
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-
-@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-<form asp-action="RandevuAl" method="post">
-    <div class="mb-3">
-        <label asp-for="CalisanId" class="form-label"></label>
-        <select asp-for="CalisanId" class="form-select">
-            <option value="">Seçiniz</option>
-            @foreach (var c in ViewBag.Calisanlar)
-            {
-                <option value="@c.Id">@c.Ad @c.Soyad</option>
-            }
-        </select>
-        <span asp-validation-for="CalisanId" class="text-danger"></span>
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Randevu Al</h1>
+        <p class="text-muted">Lütfen randevu detaylarını seçerek talebinizi oluşturun.</p>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="HizmetId" class="form-label"></label>
-        <select asp-for="HizmetId" class="form-select">
-            <option value="">Seçiniz</option>
-            @foreach (var h in ViewBag.Hizmetler)
-            {
-                <option value="@h.Id">@h.Name</option>
-            }
-        </select>
-        <span asp-validation-for="HizmetId" class="text-danger"></span>
-    </div>
+    <!-- Başarılı Mesaj -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center">
+            @TempData["Success"]
+        </div>
+    }
 
-    <div class="mb-3">
-        <label asp-for="RandevuTarihi" class="form-label"></label>
-        <input asp-for="RandevuTarihi" type="datetime-local" class="form-control" />
-        <span asp-validation-for="RandevuTarihi" class="text-danger"></span>
-    </div>
+    <!-- Form -->
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
-    <button type="submit" class="btn btn-primary">Randevu Talep Et</button>
-</form>
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Randevu Bilgileri</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="RandevuAl" method="post">
+                <!-- Çalışan Seçimi -->
+                <div class="mb-3">
+                    <label asp-for="CalisanId" class="form-label fw-bold">Çalışan</label>
+                    <select asp-for="CalisanId" class="form-select">
+                        <option value="">Seçiniz</option>
+                        @foreach (var c in ViewBag.Calisanlar)
+                        {
+                            <option value="@c.Id">@c.Ad @c.Soyad</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CalisanId" class="text-danger"></span>
+                </div>
+
+                <!-- Hizmet Seçimi -->
+                <div class="mb-3">
+                    <label asp-for="HizmetId" class="form-label fw-bold">Hizmet</label>
+                    <select asp-for="HizmetId" class="form-select">
+                        <option value="">Seçiniz</option>
+                        @foreach (var h in ViewBag.Hizmetler)
+                        {
+                            <option value="@h.Id">@h.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="HizmetId" class="text-danger"></span>
+                </div>
+
+                <!-- Randevu Tarihi -->
+                <div class="mb-3">
+                    <label asp-for="RandevuTarihi" class="form-label fw-bold">Randevu Tarihi</label>
+                    <input asp-for="RandevuTarihi" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="RandevuTarihi" class="text-danger"></span>
+                </div>
+
+                <!-- Form Butonu -->
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-calendar-plus"></i> Randevu Talep Et
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
