@@ -1,0 +1,54 @@
+﻿@model BarberShop.ViewModels.CalisanDetayViewModel
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Çalışan Detayları</h1>
+        <p class="text-muted">@Model.Ad @Model.Soyad</p>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">Toplam Kazanç</div>
+                <div class="card-body">
+                    <h3 class="text-success">@Model.ToplamKazanc.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">Toplam Çalışma Süresi</div>
+                <div class="card-body">
+                    <h3 class="text-info">@Model.ToplamCalismaDakika dakika</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">Onaylanan Randevular</div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Hizmet Adı</th>
+                        <th>Randevu Tarihi</th>
+                        <th>Fiyat</th>
+                        <th>Süre (dk)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var randevu in Model.Randevular)
+                    {
+                        <tr>
+                            <td>@randevu.HizmetAdi</td>
+                            <td>@randevu.RandevuTarihi.ToString("g")</td>
+                            <td>@randevu.Fiyat.ToString("C")</td>
+                            <td>@randevu.Sure</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

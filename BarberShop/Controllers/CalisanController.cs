@@ -200,6 +200,48 @@ namespace BarberShop.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CalisanDetay(int id)
+        {
+            // Çalışanı getir
+            var calisan = await _context.Calisanlar
+                .Include(c => c.CalisanHizmetleri)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (calisan == null) return NotFound();
+
+            // Onaylanmış randevuları getir
+            var randevular = await _context.Randevular
+                .Include(r => r.Hizmet)
+                .Where(r => r.CalisanId == id && r.Durum == RandevuDurumu.Approved)
+                .ToListAsync();
+
+            // Toplam kazanç
+            decimal toplamKazanc = randevular.Sum(r => r.Hizmet.Price);
+
+            // Toplam çalışma süresi
+            int toplamCalismaDakika = randevular.Sum(r => r.Hizmet.Duration);
+
+            // ViewModel'e verileri aktar
+            var model = new CalisanDetayViewModel
+            {
+                CalisanId = calisan.Id,
+                Ad = calisan.Ad,
+                Soyad = calisan.Soyad,
+                ToplamKazanc = toplamKazanc,
+                ToplamCalismaDakika = toplamCalismaDakika,
+                Randevular = randevular.Select(r => new RandevuDetayViewModel
+                {
+                    HizmetAdi = r.Hizmet.Name,
+                    RandevuTarihi = r.RandevuTarihi,
+                    Fiyat = r.Hizmet.Price,
+                    Sure = r.Hizmet.Duration
+                }).ToList()
+            };
+
+            return View(model);
+        }
+
 
     }
 }
