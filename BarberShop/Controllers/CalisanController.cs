@@ -94,8 +94,7 @@ namespace BarberShop.Controllers
 
 
 
-        // Çalışan düzenleme
-        [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var calisan = await _context.Calisanlar
@@ -105,6 +104,20 @@ namespace BarberShop.Controllers
 
             if (calisan == null) return NotFound();
 
+            // Tüm günler ve çalışanın çalışma saatlerini birleştir
+            var tumGunler = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>();
+            var calismaSaatleri = tumGunler.Select(gun =>
+            {
+                var mevcutGun = calisan.CalismaSaatleri.FirstOrDefault(cs => cs.Gun == gun);
+                return new CalisanCalismaSaatiViewModel
+                {
+                    Gun = gun,
+                    BaslangicSaati = mevcutGun?.BaslangicSaati ?? TimeSpan.Zero,
+                    BitisSaati = mevcutGun?.BitisSaati ?? TimeSpan.Zero,
+                    Secildi = mevcutGun != null
+                };
+            }).ToList();
+
             var viewModel = new CalisanViewModel
             {
                 Id = calisan.Id,
@@ -112,59 +125,62 @@ namespace BarberShop.Controllers
                 Soyad = calisan.Soyad,
                 Telefon = calisan.Telefon,
                 SecilenHizmetler = calisan.CalisanHizmetleri.Select(ch => ch.HizmetId).ToList(),
-                CalismaSaatleri = calisan.CalismaSaatleri.Select(cs => new CalisanCalismaSaatiViewModel
-                {
-                    Gun = cs.Gun,
-                    BaslangicSaati = cs.BaslangicSaati,
-                    BitisSaati = cs.BitisSaati
-                }).ToList()
+                CalismaSaatleri = calismaSaatleri
             };
 
-            ViewBag.Hizmetler = _context.Hizmetler.ToList();
+            ViewBag.Hizmetler = _context.Hizmetler.ToList(); // Uzmanlık alanları için doldur
             return View(viewModel);
         }
 
-        [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
+
+
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CalisanViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var calisan = await _context.Calisanlar
-                    .Include(c => c.CalisanHizmetleri)
-                    .Include(c => c.CalismaSaatleri)
-                    .FirstOrDefaultAsync(c => c.Id == model.Id);
+                ViewBag.Hizmetler = _context.Hizmetler.ToList(); // Uzmanlık alanları için tekrar doldur
+                return View(model);
+            }
 
-                if (calisan == null) return NotFound();
+            var calisan = await _context.Calisanlar
+                .Include(c => c.CalisanHizmetleri)
+                .Include(c => c.CalismaSaatleri)
+                .FirstOrDefaultAsync(c => c.Id == model.Id);
 
-                calisan.Ad = model.Ad;
-                calisan.Soyad = model.Soyad;
-                calisan.Telefon = model.Telefon;
+            if (calisan == null) return NotFound();
 
-                // Uzmanlık alanlarını güncelle
-                _context.CalisanHizmetleri.RemoveRange(calisan.CalisanHizmetleri);
-                calisan.CalisanHizmetleri = model.SecilenHizmetler.Select(hizmetId => new CalisanHizmet
-                {
-                    HizmetId = hizmetId
-                }).ToList();
+            calisan.Ad = model.Ad;
+            calisan.Soyad = model.Soyad;
+            calisan.Telefon = model.Telefon;
 
-                // Çalışma saatlerini güncelle
-                _context.CalisanCalismaSaatleri.RemoveRange(calisan.CalismaSaatleri);
-                calisan.CalismaSaatleri = model.CalismaSaatleri.Select(cs => new CalisanCalismaSaatleri
+            // Uzmanlık alanlarını güncelle
+            _context.CalisanHizmetleri.RemoveRange(calisan.CalisanHizmetleri);
+            calisan.CalisanHizmetleri = model.SecilenHizmetler.Select(hizmetId => new CalisanHizmet
+            {
+                HizmetId = hizmetId
+            }).ToList();
+
+            // Çalışma saatlerini güncelle
+            _context.CalisanCalismaSaatleri.RemoveRange(calisan.CalismaSaatleri);
+            calisan.CalismaSaatleri = model.CalismaSaatleri
+                .Where(cs => cs.Secildi) // Sadece seçili olan günleri ekle
+                .Select(cs => new CalisanCalismaSaatleri
                 {
                     Gun = cs.Gun,
                     BaslangicSaati = cs.BaslangicSaati,
                     BitisSaati = cs.BitisSaati
-                }).ToList();
+                })
+                .ToList();
 
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewBag.Hizmetler = _context.Hizmetler.ToList();
-            return View(model);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
+
+
 
         [Authorize(Roles = "Admin")] // Admin rolü yetkisi gerekiyor
         [HttpGet]

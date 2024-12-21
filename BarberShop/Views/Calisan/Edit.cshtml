@@ -1,46 +1,99 @@
 ﻿@model BarberShop.ViewModels.CalisanViewModel
 
-@{
-    ViewData["Title"] = "Çalışan Düzenle";
-}
-
-<h1 class="mb-4">Çalışan Düzenle</h1>
-
-<form asp-action="Edit" method="post">
-    <input asp-for="Id" type="hidden" />
-    <div class="form-group mb-3">
-        <label>Ad</label>
-        <input asp-for="Ad" class="form-control" />
-    </div>
-    <div class="form-group mb-3">
-        <label>Soyad</label>
-        <input asp-for="Soyad" class="form-control" />
-    </div>
-    <div class="form-group mb-3">
-        <label>Telefon</label>
-        <input asp-for="Telefon" class="form-control" />
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Çalışan Düzenle</h1>
+        <p class="text-muted">Bu sayfadan çalışan bilgilerini düzenleyebilirsiniz.</p>
     </div>
 
-    <h4>Uzmanlık Alanları</h4>
-    @foreach (var hizmet in ViewBag.Hizmetler)
-    {
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="@hizmet.Id" name="SecilenHizmetler"
-            @(Model.SecilenHizmetler.Contains(hizmet.Id) ? "checked" : "") />
-            <label class="form-check-label">@hizmet.Name</label>
+    <form asp-action="Edit" method="post" class="card shadow-lg border-0">
+        <!-- Form Başlığı -->
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Çalışan Bilgileri</h4>
         </div>
-    }
 
-    <h4>Çalışma Saatleri</h4>
-    @for (var i = 0; i < Model.CalismaSaatleri.Count; i++)
-    {
-        <div class="mb-2">
-            <label>@Model.CalismaSaatleri[i].Gun</label>
-            <input type="time" asp-for="CalismaSaatleri[i].BaslangicSaati" class="form-control d-inline w-25" />
-            <input type="time" asp-for="CalismaSaatleri[i].BitisSaati" class="form-control d-inline w-25" />
+        <div class="card-body">
+            <!-- Çalışan ID -->
+            <input asp-for="Id" type="hidden" />
+
+            <!-- Ad -->
+            <div class="mb-3">
+                <label asp-for="Ad" class="form-label fw-bold">Ad</label>
+                <input asp-for="Ad" class="form-control" />
+            </div>
+
+            <!-- Soyad -->
+            <div class="mb-3">
+                <label asp-for="Soyad" class="form-label fw-bold">Soyad</label>
+                <input asp-for="Soyad" class="form-control" />
+            </div>
+
+            <!-- Telefon -->
+            <div class="mb-3">
+                <label asp-for="Telefon" class="form-label fw-bold">Telefon</label>
+                <input asp-for="Telefon" class="form-control" />
+            </div>
+
+            <!-- Uzmanlık Alanları -->
+            <h4 class="text-primary mt-4">Uzmanlık Alanları</h4>
+            <div class="row mb-3">
+                @foreach (var hizmet in ViewBag.Hizmetler)
+                {
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@hizmet.Id" name="SecilenHizmetler"
+                            @(Model.SecilenHizmetler.Contains(hizmet.Id) ? "checked" : "") />
+                            <label class="form-check-label">@hizmet.Name</label>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Çalışma Saatleri -->
+            <h4 class="text-primary mt-4">Çalışma Saatleri</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Gün</th>
+                            <th>Başlangıç Saati</th>
+                            <th>Bitiş Saati</th>
+                            <th>Çalışıyor mu?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.CalismaSaatleri.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Model.CalismaSaatleri[i].Gun
+                                    <input type="hidden" asp-for="CalismaSaatleri[i].Gun" />
+                                </td>
+                                <td>
+                                    <input type="time" asp-for="CalismaSaatleri[i].BaslangicSaati" class="form-control" />
+                                </td>
+                                <td>
+                                    <input type="time" asp-for="CalismaSaatleri[i].BitisSaati" class="form-control" />
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" asp-for="CalismaSaatleri[i].Secildi" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    }
 
-    <button type="submit" class="btn btn-warning text-white mt-3">Güncelle</button>
-    <a asp-action="Index" class="btn btn-secondary mt-3">İptal</a>
-</form>
+        <!-- Form Butonları -->
+        <div class="card-footer text-center">
+            <button type="submit" class="btn btn-warning text-white me-2">
+                <i class="bi bi-save"></i> Güncelle
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> İptal
+            </a>
+        </div>
+    </form>
+</div>

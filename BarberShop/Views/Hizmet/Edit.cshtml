@@ -1,24 +1,59 @@
 ﻿@model BarberShop.Models.Hizmet
 
-<h1>Hizmeti Düzenle</h1>
+@{
+    ViewData["Title"] = "Hizmeti Düzenle";
+}
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div class="form-group">
-        <label>Hizmet Adı</label>
-        <input asp-for="Name" class="form-control" />
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Hizmeti Düzenle</h1>
+        <p class="text-muted">Bu sayfadan hizmet bilgilerini düzenleyebilirsiniz.</p>
     </div>
-    <div class="form-group">
-        <label>Açıklama</label>
-        <input asp-for="Description" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Ücret</label>
-        <input asp-for="Price" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Süre (dakika)</label>
-        <input asp-for="Duration" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Kaydet</button>
-</form>
+
+    <form asp-action="Edit" method="post" class="card shadow-lg border-0">
+        <!-- Form Başlığı -->
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Hizmet Bilgileri</h4>
+        </div>
+
+        <div class="card-body">
+            <!-- Hizmet ID -->
+            <input asp-for="Id" type="hidden" />
+
+            <!-- Hizmet Adı -->
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-bold">Hizmet Adı</label>
+                <input asp-for="Name" class="form-control" placeholder="Hizmet adını girin" />
+            </div>
+
+            <!-- Açıklama -->
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-bold">Açıklama</label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Hizmet açıklamasını girin"></textarea>
+            </div>
+
+            <!-- Ücret -->
+            <div class="mb-3">
+                <label asp-for="Price" class="form-label fw-bold">Ücret</label>
+                <input asp-for="Price" type="number" step="0.01" class="form-control" placeholder="Hizmet ücretini girin" />
+            </div>
+
+            <!-- Süre -->
+            <div class="mb-3">
+                <label asp-for="Duration" class="form-label fw-bold">Süre (dakika)</label>
+                <input asp-for="Duration" type="number" class="form-control" placeholder="Hizmet süresini dakika cinsinden girin" />
+            </div>
+        </div>
+
+        <!-- Form Butonları -->
+        <div class="card-footer text-center">
+            <button type="submit" class="btn btn-warning text-white me-2">
+                <i class="bi bi-save"></i> Güncelle
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> İptal
+            </a>
+        </div>
+    </form>
+</div>

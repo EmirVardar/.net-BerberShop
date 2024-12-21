@@ -27,9 +27,13 @@ namespace BarberShop.Controllers
         [HttpGet]
         public IActionResult RandevuAl()
         {
+            var model = new RandevuViewModel
+            {
+                RandevuTarihi = DateTime.Now
+            };
             ViewBag.Calisanlar = _context.Calisanlar.ToList();
             ViewBag.Hizmetler = _context.Hizmetler.ToList();
-            return View(new RandevuViewModel());
+            return View(model);
         }
 
         [Authorize(Roles = "User")]
