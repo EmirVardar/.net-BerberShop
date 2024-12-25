@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-
+//bu kısım account 
 namespace BarberShop.Controllers
 {
     public class AccountController : Controller
