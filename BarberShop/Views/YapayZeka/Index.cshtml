@@ -1,0 +1,147 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Ana Layout kullanılıyor
+}
+
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Saç Modeli Önerisi</h1>
+        <p class="text-muted">Fotoğraf yükleyerek saç modeli deneyebilir, farklı stillere göz atabilirsiniz.</p>
+    </div>
+
+    <!-- Kart tasarımı -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Fotoğraf Yükle ve Model Seç</h4>
+        </div>
+        <div class="card-body p-4">
+            <div class="row justify-content-center">
+                <!-- Sol kısım: Fotoğraf seçimi ve yükleme butonu -->
+                <div class="col-md-6 mb-3">
+                    <label for="filePhoto" class="form-label fw-bold">Bir fotoğraf seçin:</label>
+                    <input type="file" id="filePhoto" accept="image/*" class="form-control" />
+
+                    <label for="hairTypeSelect" class="form-label mt-3 fw-bold">Saç Modeli Seçiniz:</label>
+                    <select id="hairTypeSelect" class="form-select">
+                        <option value="">Bizim önerimiz :)</option>
+                        <option value="603">Kısa saç</option>
+                        <option value="801">Sarı saç</option>
+                        <option value="901">Düz saç</option>
+                        <option value="101">Öne Doğru</option>
+                        <option value="201">Uzun saç</option>
+                        <option value="301">Öne Doğru ve uzun saç</option>
+                        
+                        <option value="503">Yoğun dalgalı</option>
+                        <option value="603">Kısa saç</option>
+                        <option value="801">Sarı saç</option>
+                        <option value="901">Düz saç</option>
+                        
+                        
+                        
+
+                    </select>
+
+                    <button id="btnSend" class="btn btn-secondary mt-3">
+                        <i class="bi bi-upload"></i> Fotoğrafı Yükle
+                    </button>
+
+                    <!-- Yükleniyor göstergesi -->
+                    <div id="loadingSpinner" class="mt-3 text-center d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                        <p>Fotoğraf işleniyor, lütfen bekleyin...</p>
+                    </div>
+                </div>
+
+                <!-- Sağ kısım: Sonuç önizlemesi -->
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <div class="text-center">
+                        <h5 class="mb-3">Önerilen Model Önizlemesi</h5>
+                        <div id="previewContainer"
+                             style="max-width: 200px; margin: 0 auto;">
+                            <!-- Yüklenen saç modeli burada görünecek -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(function () {
+        $("#btnSend").on("click", function () {
+            const inputElement = $("#filePhoto")[0];
+            const selectedFile = inputElement.files[0];
+
+            if (!selectedFile) {
+                alert("Lütfen bir fotoğraf seçiniz!");
+                return;
+            }
+
+            // Kullanıcının dropdown'dan seçtiği ID
+            const userSelectedID = $("#hairTypeSelect").val();
+            const allHairModels = [
+                "101", "201", "301", "401", "492", "493", "502",
+                "503", "603", "801", "901", "1001", "1101", "1201", "1301"
+            ];
+
+            let finalHairModel;
+
+            // Rastgele seçim
+            if (userSelectedID === "") {
+                finalHairModel = allHairModels[
+                    Math.floor(Math.random() * allHairModels.length)
+                ];
+            } else {
+                finalHairModel = userSelectedID;
+            }
+
+            // Yükleniyor göstergesini aç
+            $("#loadingSpinner").removeClass("d-none");
+
+            // Butonu devre dışı bırak
+            $("#btnSend").prop("disabled", true);
+
+            const formPayload = new FormData();
+            formPayload.append("image_target", selectedFile);
+            formPayload.append("hair_type", finalHairModel);
+
+            $.ajax({
+                url: "https://hairstyle-changer.p.rapidapi.com/huoshan/facebody/hairstyle",
+                method: "POST",
+                headers: {
+                    "x-rapidapi-key": "2207d909d5msh9ac98493a16aa91p16cd32jsn30447a292fba",
+                    "x-rapidapi-host": "hairstyle-changer.p.rapidapi.com"
+                },
+                processData: false,
+                contentType: false,
+                data: formPayload,
+                success: function (reply) {
+                    const responseBase64 = reply.data.image;
+                    const newImage = document.createElement("img");
+
+                    newImage.src = `data:image/jpeg;base64,${responseBase64}`;
+                    newImage.className = "img-thumbnail";
+                    newImage.style.width = "100%";
+                    newImage.style.height = "auto";
+                    newImage.style.marginTop = "20px";
+
+                    $("#previewContainer").html(newImage);
+                },
+                error: function (xhr, status, errMsg) {
+                    alert("Bir hata meydana geldi, lütfen tekrar deneyin.");
+                    console.error("Hata ayrıntısı:", status, errMsg);
+                },
+                complete: function () {
+                    // İşlem bittiğinde spinner'ı kaldır, butonu tekrar etkinleştir
+                    $("#loadingSpinner").addClass("d-none");
+                    $("#btnSend").prop("disabled", false);
+                }
+            });
+        });
+    });
+</script>
