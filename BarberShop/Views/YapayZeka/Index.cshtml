@@ -30,22 +30,21 @@
                         <option value="101">Öne Doğru</option>
                         <option value="201">Uzun saç</option>
                         <option value="301">Öne Doğru ve uzun saç</option>
-                        
+
                         <option value="503">Yoğun dalgalı</option>
                         <option value="603">Kısa saç</option>
                         <option value="801">Sarı saç</option>
                         <option value="901">Düz saç</option>
-                        
-                        
-                        
 
                     </select>
+
+                    <p id="modelDescription" class="text-muted mt-2"></p>
 
                     <button id="btnSend" class="btn btn-secondary mt-3">
                         <i class="bi bi-upload"></i> Fotoğrafı Yükle
                     </button>
 
-                    <!-- Yükleniyor göstergesi -->
+                    <!-- Yükleniyor göstergesini ekle -->
                     <div id="loadingSpinner" class="mt-3 text-center d-none">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Yükleniyor...</span>
@@ -54,13 +53,19 @@
                     </div>
                 </div>
 
-                <!-- Sağ kısım: Sonuç önizlemesi -->
+                <!-- Sağ kısım: Önizleme ve Sonuçlar -->
                 <div class="col-md-6 mt-4 mt-md-0">
                     <div class="text-center">
-                        <h5 class="mb-3">Önerilen Model Önizlemesi</h5>
-                        <div id="previewContainer"
-                             style="max-width: 200px; margin: 0 auto;">
-                            <!-- Yüklenen saç modeli burada görünecek -->
+                        <h5 class="mb-3">Yüklenen Fotoğraf ve Önerilen Model</h5>
+                        <div id="previewContainer" class="d-flex justify-content-around align-items-center">
+                            <div id="originalImageContainer" class="text-center">
+                                <h6 class="text-muted">Orijinal Fotoğraf</h6>
+                                <img id="originalImage" src="" alt="Orijinal" class="img-thumbnail" style="width: 150px; height: auto; display: none;" />
+                            </div>
+                            <div id="resultImageContainer" class="text-center">
+                                <h6 class="text-muted">Önerilen Model</h6>
+                                <img id="resultImage" src="" alt="Sonuç" class="img-thumbnail" style="width: 150px; height: auto; display: none;" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -69,10 +74,39 @@
     </div>
 </div>
 
-<!-- jQuery CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     $(function () {
+        const modelDescriptions = {
+            "603": "Kısa ve sade saç modeli.",
+            "801": "Parlak sarı saç.",
+            "901": "Düz ve klasik saç modeli.",
+            "101": "Hacimli öne doğru stil.",
+            "201": "Uzun saç modeli.",
+            "301": "Hacimli ve uzun saç kombinasyonu.",
+            "503": "Yoğun dalgalı saç modeli."
+        };
+
+        // Saç modeli seçildiğinde açıklama göster
+        $("#hairTypeSelect").on("change", function () {
+            const selectedModel = $(this).val();
+            const description = modelDescriptions[selectedModel] || "Rastgele bir model seçildi.";
+            $("#modelDescription").text(description);
+        });
+
+        // Fotoğraf seçildiğinde önizleme alanını doldur
+        $("#filePhoto").on("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    $("#originalImage").attr("src", e.target.result).show();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Fotoğraf ve saç modeli API'ye gönderme işlemi
         $("#btnSend").on("click", function () {
             const inputElement = $("#filePhoto")[0];
             const selectedFile = inputElement.files[0];
@@ -82,28 +116,15 @@
                 return;
             }
 
-            // Kullanıcının dropdown'dan seçtiği ID
             const userSelectedID = $("#hairTypeSelect").val();
             const allHairModels = [
                 "101", "201", "301", "401", "492", "493", "502",
                 "503", "603", "801", "901", "1001", "1101", "1201", "1301"
             ];
 
-            let finalHairModel;
+            const finalHairModel = userSelectedID || allHairModels[Math.floor(Math.random() * allHairModels.length)];
 
-            // Rastgele seçim
-            if (userSelectedID === "") {
-                finalHairModel = allHairModels[
-                    Math.floor(Math.random() * allHairModels.length)
-                ];
-            } else {
-                finalHairModel = userSelectedID;
-            }
-
-            // Yükleniyor göstergesini aç
             $("#loadingSpinner").removeClass("d-none");
-
-            // Butonu devre dışı bırak
             $("#btnSend").prop("disabled", true);
 
             const formPayload = new FormData();
@@ -122,22 +143,13 @@
                 data: formPayload,
                 success: function (reply) {
                     const responseBase64 = reply.data.image;
-                    const newImage = document.createElement("img");
-
-                    newImage.src = `data:image/jpeg;base64,${responseBase64}`;
-                    newImage.className = "img-thumbnail";
-                    newImage.style.width = "100%";
-                    newImage.style.height = "auto";
-                    newImage.style.marginTop = "20px";
-
-                    $("#previewContainer").html(newImage);
+                    $("#resultImage").attr("src", `data:image/jpeg;base64,${responseBase64}`).show();
                 },
                 error: function (xhr, status, errMsg) {
                     alert("Bir hata meydana geldi, lütfen tekrar deneyin.");
-                    console.error("Hata ayrıntısı:", status, errMsg);
+                    console.error("Hata Ayrıntıları:", xhr, status, errMsg);
                 },
                 complete: function () {
-                    // İşlem bittiğinde spinner'ı kaldır, butonu tekrar etkinleştir
                     $("#loadingSpinner").addClass("d-none");
                     $("#btnSend").prop("disabled", false);
                 }
