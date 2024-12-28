@@ -13,9 +13,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Identity Servisleri
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    // Þifre doðrulama kurallarýný devre dýþý býrak
+    options.Password.RequireDigit = false;            // Rakam gereksinimi kaldýrýlýr
+    options.Password.RequiredLength = 1;              // Minimum þifre uzunluðu 1 karakter
+    options.Password.RequireNonAlphanumeric = false;  // Özel karakter gereksinimi kaldýrýlýr
+    options.Password.RequireUppercase = false;        // Büyük harf gereksinimi kaldýrýlýr
+    options.Password.RequireLowercase = false;        // Küçük harf gereksinimi kaldýrýlýr
+    options.Password.RequiredUniqueChars = 0;         // Benzersiz karakter gereksinimi kaldýrýlýr
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 // Cookie Authentication
 builder.Services.ConfigureApplicationCookie(options =>
@@ -80,16 +89,16 @@ async Task CreateRolesAndAdminUser(WebApplication app)
         }
 
         // Admin kullanýcýsýný oluþtur
-        var adminUser = await userManager.FindByEmailAsync("admin@example.com");
+        var adminUser = await userManager.FindByEmailAsync("g211210071@sakarya.edu.tr");
         if (adminUser == null)
         {
             adminUser = new IdentityUser
             {
-                UserName = "admin@example.com",
-                Email = "admin@example.com"
+                UserName = "g211210071@sakarya.edu.tr",
+                Email = "g211210071@sakarya.edu.tr"
             };
 
-            var result = await userManager.CreateAsync(adminUser, "Admin123!");
+            var result = await userManager.CreateAsync(adminUser, "sau");
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(adminUser, "Admin");
