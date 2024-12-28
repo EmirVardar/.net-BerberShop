@@ -19,6 +19,7 @@ namespace BarberShop.Controllers
 
         // Tüm çalışanları listele
         // Admin rolü yetkisi gerekiyor
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var calisanlar = _context.Calisanlar
