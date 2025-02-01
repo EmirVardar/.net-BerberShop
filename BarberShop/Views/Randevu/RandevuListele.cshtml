@@ -1,0 +1,87 @@
+﻿@model List<BarberShop.ViewModels.RandevuListeViewModel>
+
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Randevular</h1>
+        <p class="text-muted">BarberShop'taki randevuların detaylı listesini aşağıda bulabilirsiniz.</p>
+    </div>
+
+    <!-- Randevular Tablosu -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Randevu Listesi</h4>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Kullanıcı</th>
+                        <th>Çalışan</th>
+                        <th>Hizmet</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                        <th class="text-center">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <!-- Kullanıcı -->
+                            <td class="align-middle">@r.UserName</td>
+
+                            <!-- Çalışan -->
+                            <td class="align-middle">@r.CalisanAdi</td>
+
+                            <!-- Hizmet -->
+                            <td class="align-middle">@r.HizmetAdi</td>
+
+                            <!-- Tarih -->
+                            <td class="align-middle">@r.Tarih</td>
+
+                            <!-- Durum -->
+                            <td class="align-middle">
+                                @if (r.Durum == BarberShop.Models.RandevuDurumu.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Bekliyor</span>
+                                }
+                                else if (r.Durum == BarberShop.Models.RandevuDurumu.Approved)
+                                {
+                                    <span class="badge bg-success">Onaylandı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Reddedildi</span>
+                                }
+                            </td>
+
+                            <!-- İşlem -->
+                            <td class="text-center align-middle">
+                                @if (r.Durum == BarberShop.Models.RandevuDurumu.Pending)
+                                {
+                                    <form asp-action="Onayla" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@r.Id" />
+                                        <button type="submit" class="btn btn-sm btn-success me-1">
+                                            <i class="bi bi-check-circle"></i> Onayla
+                                        </button>
+                                    </form>
+                                    <form asp-action="Reddet" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@r.Id" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-x-circle"></i> Reddet
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Onay/Reddetme Yapılmış</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

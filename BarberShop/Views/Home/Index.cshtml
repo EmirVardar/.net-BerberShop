@@ -1,8 +1,88 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Ana Sayfa - Berber Salonumuz";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Section -->
+<div class="hero-section position-relative text-center" style="height: 450px; background: url('/images/barbershop.jpg') no-repeat center center/cover;">
+    <!-- Koyu Kaplama -->
+    <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.6);"></div>
+    <!-- İçerik -->
+    <div class="content position-relative d-flex flex-column align-items-center justify-content-center h-100">
+        <!-- Burada yazı beyaz yapılıyor -->
+        <h1 class="fw-bold display-3 mb-3 text-uppercase" style="color: white; letter-spacing: 2px;">Berber Salonumuz</h1>
+        <p class="lead mb-4" style="color: white; font-size: 1.2rem;">Profesyonel hizmet ve modern çözümlerle tarzınıza tarz katıyoruz.</p>
+        <a href="#contact" class="btn btn-lg btn-success px-5">Bize Ulaşın</a>
+    </div>
+</div>
+
+
+<!-- Hakkımızda Bölümü -->
+<div class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="/images/barber-tools.jpg" alt="Berber Ekipmanları" class="img-fluid rounded shadow-lg">
+        </div>
+        <div class="col-md-6">
+            <h2 class="fw-bold text-primary mb-3">Hakkımızda</h2>
+            <p class="text-muted">
+                Salonumuz, yılların deneyimiyle profesyonel hizmetler sunmaktadır. Sizi tarzınıza uygun çözümlerle memnun etmek için buradayız.
+            </p>
+            <ul class="list-unstyled">
+                <li>✅ 15+ yıllık tecrübe</li>
+                <li>✅ Modern ve hijyenik salon</li>
+                <li>✅ Uzman ve güler yüzlü ekip</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Konum Bölümü -->
+<div class="container py-5 bg-light rounded">
+    <h2 class="text-center text-primary mb-4">Salonumuzun Konumu</h2>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3163.392912870707!2d28.973887115413275!3d41.005321726265315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cab9957516b6e7%3A0xa2d3cc780c6dfdd!2sModa%20Caddesi%2C%20Kad%C4%B1k%C3%B6y!5e0!3m2!1str!2str!4v1697650012345"
+            class="w-100 rounded shadow-lg" height="350" style="border: 0;" allowfullscreen="" loading="lazy"></iframe>
+</div>
+
+<!-- Kullanıcı Yorumları -->
+<div class="container py-5">
+    <h2 class="text-center text-primary mb-4">Kullanıcı Yorumları</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-lg h-100 text-center">
+                <div class="card-body">
+                    <h5 class="fw-bold">Ali Yılmaz</h5>
+                    <p class="text-muted fst-italic">"Harika bir ekip! Her zaman güler yüzlü ve işlerini profesyonel yapıyorlar."</p>
+                    <div class="text-warning">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-lg h-100 text-center">
+                <div class="card-body">
+                    <h5 class="fw-bold">Ayşe Demir</h5>
+                    <p class="text-muted fst-italic">"Hijyen kurallarına çok dikkat ediyorlar. Salon çok temiz ve rahat bir ortam sunuyor."</p>
+                    <div class="text-warning">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-lg h-100 text-center">
+                <div class="card-body">
+                    <h5 class="fw-bold">Mehmet Çelik</h5>
+                    <p class="text-muted fst-italic">"Kesinlikle harika bir deneyimdi! Uzman kadro ve sıcak bir atmosfer."</p>
+                    <div class="text-warning">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- İletişim Bölümü -->
+<div id="contact" class="py-5 text-center" style="background-color: #333;">
+    <div class="container">
+        <h2 class="mb-4 fw-bold" style="color: white;">Bize Ulaşın</h2>
+        <p class="mb-3" style="color: white;">Telefon: <strong>(0216) 123 45 67</strong> | Email: <strong>info@salonumuz.com</strong></p>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-lg btn-success px-5">Randevu Al</a>
+
+    </div>
 </div>

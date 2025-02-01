@@ -1,0 +1,73 @@
+﻿@model List<BarberShop.ViewModels.RandevuListeViewModel>
+
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Randevularım</h1>
+        <p class="text-muted">BarberShop'tan aldığınız randevu taleplerinizin detaylarını aşağıda görebilirsiniz.</p>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <!-- Randevu Yok Mesajı -->
+        <div class="alert alert-warning text-center">
+            Henüz bir randevu talebiniz bulunmuyor.
+        </div>
+    }
+    else
+    {
+        <!-- Randevu Tablosu -->
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">Randevu Listesi</h4>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Çalışan</th>
+                            <th>Hizmet</th>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <!-- Çalışan -->
+                                <td class="align-middle">@r.CalisanAdi</td>
+
+                                <!-- Hizmet -->
+                                <td class="align-middle">@r.HizmetAdi</td>
+
+                                <!-- Tarih -->
+                                <td class="align-middle">@r.Tarih.ToString("dd/MM/yyyy HH:mm")</td>
+
+                                <!-- Durum -->
+                                <td class="align-middle">
+                                    @if (r.Durum == BarberShop.Models.RandevuDurumu.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark">Bekliyor</span>
+                                    }
+                                    else if (r.Durum == BarberShop.Models.RandevuDurumu.Approved)
+                                    {
+                                        <span class="badge bg-success">Onaylandı</span>
+                                    }
+                                    else if (r.Durum == BarberShop.Models.RandevuDurumu.Rejected)
+                                    {
+                                        <span class="badge bg-danger">Reddedildi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Bilinmiyor</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,140 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Ana Layout kullanılıyor
+}
+
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Saç Modeli Önerisi</h1>
+        <p class="text-muted">Fotoğraf yükleyerek saç modeli deneyebilir, farklı stillere göz atabilirsiniz.</p>
+    </div>
+
+    <!-- Kart tasarımı -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Fotoğraf Yükle ve Model Seç</h4>
+        </div>
+        <div class="card-body p-4">
+            <div class="row justify-content-center">
+                <!-- Sol kısım: Fotoğraf seçimi ve yükleme butonu -->
+                <div class="col-md-6 mb-3">
+                    <label for="filePhoto" class="form-label fw-bold">Bir fotoğraf seçin:</label>
+                    <input type="file" id="filePhoto" accept="image/*" class="form-control" />
+
+                    <label for="hairTypeSelect" class="form-label mt-3 fw-bold">Saç Modeli Seçiniz:</label>
+                    <select id="hairTypeSelect" class="form-select">
+                        <option value="">Bizim önerimiz :)</option>
+                        <option value="603">Kısa saç</option>
+                        <option value="801">Sarı saç</option>
+                        <option value="901">Düz saç</option>
+                        <option value="101">Hacimli öne doğru</option>
+                        <option value="201">Uzun saç</option>
+                        <option value="301">Hacimli ve uzun saç</option>
+                        <option value="503">Yoğun dalgalı</option>
+                    </select>
+
+                    <button id="btnSend" class="btn btn-secondary mt-3">
+                        <i class="bi bi-upload"></i> Fotoğrafı Yükle
+                    </button>
+
+                    <!-- Yükleniyor göstergesini ekle -->
+                    <div id="loadingSpinner" class="mt-3 text-center d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                        <p>Fotoğraf işleniyor, lütfen bekleyin...</p>
+                    </div>
+                </div>
+
+                <!-- Sağ kısım: Önizleme ve Sonuçlar -->
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <div class="text-center">
+                        <h5 class="mb-3">Yüklenen Fotoğraf ve Önerilen Model</h5>
+                        <div id="previewContainer" class="d-flex justify-content-around align-items-center">
+                            <div id="originalImageContainer" class="text-center">
+                                <h6 class="text-muted">Orijinal Fotoğraf</h6>
+                                <img id="originalImage" src="" alt="Orijinal" class="img-thumbnail" style="width: 150px; height: auto; display: none;" />
+                            </div>
+                            <div id="resultImageContainer" class="text-center">
+                                <h6 class="text-muted">Önerilen Model</h6>
+                                <img id="resultImage" src="" alt="Sonuç" class="img-thumbnail" style="width: 150px; height: auto; display: none;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(function () {
+        // Fotoğraf seçildiğinde önizleme alanını doldur
+        $("#filePhoto").on("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    $("#originalImage").attr("src", e.target.result).show();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Fotoğraf ve saç modeli API'ye gönderme işlemi
+        $("#btnSend").on("click", function () {
+            const inputElement = $("#filePhoto")[0];
+            const selectedFile = inputElement.files[0];
+
+            if (!selectedFile) {
+                alert("Lütfen bir fotoğraf seçiniz!");
+                return;
+            }
+
+            const userSelectedID = $("#hairTypeSelect").val();
+            const allHairModels = [
+                "101", "201", "301", "401", "492", "493", "502",
+                "503", "603", "801", "901", "1001", "1101", "1201", "1301"
+            ];
+
+            const finalHairModel = userSelectedID || allHairModels[Math.floor(Math.random() * allHairModels.length)];
+
+            $("#loadingSpinner").removeClass("d-none");
+            $("#btnSend").prop("disabled", true);
+
+            const formPayload = new FormData();
+            formPayload.append("image_target", selectedFile);
+            formPayload.append("hair_type", finalHairModel);
+
+            $.ajax({
+                url: "https://hairstyle-changer.p.rapidapi.com/huoshan/facebody/hairstyle",
+                method: "POST",
+                headers: {
+                    "x-rapidapi-key": "40deaad4cbmsh513cf54c7208629p1f0e24jsn69cdeac153cd",
+                    "x-rapidapi-host": "hairstyle-changer.p.rapidapi.com"
+                },
+                processData: false,
+                contentType: false,
+                data: formPayload,
+                success: function (reply) {
+                    console.log(reply); // Yanıt kontrolü
+                    const responseBase64 = reply.data?.image;
+                    if (responseBase64) {
+                        $("#resultImage").attr("src", `data:image/jpeg;base64,${responseBase64}`).show();
+                    } else {
+                        alert("API'den beklenen yanıt alınamadı.");
+                    }
+                },
+                error: function (xhr, status, errMsg) {
+                    alert("Bir hata meydana geldi, lütfen tekrar deneyin.");
+                    console.error("Hata Ayrıntıları:", xhr, status, errMsg);
+                },
+                complete: function () {
+                    $("#loadingSpinner").addClass("d-none");
+                    $("#btnSend").prop("disabled", false);
+                }
+            });
+        });
+    });
+</script>

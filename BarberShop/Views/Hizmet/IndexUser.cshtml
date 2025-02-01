@@ -1,0 +1,39 @@
+﻿@model IEnumerable<BarberShop.Models.Hizmet>
+
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Hizmetlerimiz</h1>
+        <p class="text-muted">BarberShop'un sunduğu tüm hizmetleri aşağıda görebilirsiniz.</p>
+    </div>
+
+    <!-- Hizmetler Tablosu -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Hizmet Listesi</h4>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Hizmet Adı</th>
+                        <th>Açıklama</th>
+                        <th>Ücret</th>
+                        <th>Süre (dakika)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var hizmet in Model)
+                    {
+                        <tr>
+                            <td class="align-middle">@hizmet.Name</td>
+                            <td class="align-middle">@hizmet.Description</td>
+                            <td class="align-middle">@hizmet.Price.ToString("C")</td>
+                            <td class="align-middle">@hizmet.Duration</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

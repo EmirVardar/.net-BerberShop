@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="d-flex justify-content-center align-items-start" style="min-height: 85vh; background-color: #f8f9fa; padding-top: 30px;">
+    <div class="card shadow-lg" style="width: 400px;">
+        <div class="card-header bg-primary text-white text-center">
+            <h3>Giriş Yap</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Login" method="post">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email adresinizi girin" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Şifre</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Şifrenizi girin" required>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Giriş Yap</button>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer text-center">
+            <small>Henüz bir hesabınız yok mu? <a asp-action="Register" class="text-decoration-none">Kayıt Ol</a></small>
+        </div>
+    </div>
+</div>

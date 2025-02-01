@@ -1,0 +1,93 @@
+﻿@model BarberShop.ViewModels.CalisanViewModel
+
+<div class="container mt-5">
+    <!-- Sayfa Başlığı -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Yeni Çalışan Ekle</h1>
+        <p class="text-muted">Lütfen çalışan bilgilerini ve çalışma saatlerini eksiksiz doldurunuz.</p>
+    </div>
+
+    <form asp-action="Create" method="post" class="card shadow-lg border-0">
+        <!-- Form Başlığı -->
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Çalışan Bilgileri</h4>
+        </div>
+
+        <div class="card-body">
+            <!-- Kişisel Bilgiler -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label asp-for="Ad" class="form-label fw-bold">Ad</label>
+                    <input asp-for="Ad" class="form-control" placeholder="Adınızı girin" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Soyad" class="form-label fw-bold">Soyad</label>
+                    <input asp-for="Soyad" class="form-control" placeholder="Soyadınızı girin" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Telefon" class="form-label fw-bold">Telefon</label>
+                    <input asp-for="Telefon" class="form-control" placeholder="Telefon numaranız" />
+                </div>
+            </div>
+
+            <!-- Uzmanlık Alanları -->
+            <h4 class="text-primary mb-3">Uzmanlık Alanları</h4>
+            <div class="row">
+                @foreach (var hizmet in ViewBag.Hizmetler)
+                {
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@hizmet.Id" name="SecilenHizmetler" id="hizmet-@hizmet.Id" />
+                            <label class="form-check-label" for="hizmet-@hizmet.Id">@hizmet.Name</label>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Çalışma Saatleri -->
+            <h4 class="text-primary mb-3">Çalışma Saatleri</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Gün</th>
+                            <th>Başlangıç Saati</th>
+                            <th>Bitiş Saati</th>
+                            <th>Çalışıyor mu?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < 7; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @((DayOfWeek)i)
+                                    <input type="hidden" name="CalismaSaatleri[@i].Gun" value="@((DayOfWeek)i)" />
+                                </td>
+                                <td>
+                                    <input type="time" name="CalismaSaatleri[@i].BaslangicSaati" class="form-control" />
+                                </td>
+                                <td>
+                                    <input type="time" name="CalismaSaatleri[@i].BitisSaati" class="form-control" />
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" id="gun-@i" name="CalismaSaatleri[@i].Secildi" value="true" class="form-check-input" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Kaydet Butonu -->
+        <div class="card-footer text-center">
+            <button type="submit" class="btn btn-success px-4 py-2 me-2">
+                <i class="bi bi-check-circle me-1"></i> Kaydet
+            </button>
+            <a asp-action="Index" class="btn btn-secondary px-4 py-2">
+                <i class="bi bi-x-circle me-1"></i> İptal
+            </a>
+        </div>
+    </form>
+</div>
